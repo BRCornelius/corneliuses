@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+:root {
+  --background: #140019;
+  --foreground: #f6e9c9;
+  --nola-purple: #4b0f77;
+  --nola-purple-deep: #1f0329;
+  --nola-green: #0f7938;
+  --nola-gold: #f7c948;
+  --nola-gold-bright: #ffe08a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-nola-purple: var(--nola-purple);
+  --color-nola-purple-deep: var(--nola-purple-deep);
+  --color-nola-green: var(--nola-green);
+  --color-nola-gold: var(--nola-gold);
+  --color-nola-gold-bright: var(--nola-gold-bright);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-playfair);
+  --font-script: var(--font-script);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Wrought-iron style divider stripe in Mardi Gras colors */
+.mardi-stripe {
+  height: 6px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--nola-purple) 0px,
+    var(--nola-purple) 24px,
+    var(--nola-green) 24px,
+    var(--nola-green) 48px,
+    var(--nola-gold) 48px,
+    var(--nola-gold) 72px
+  );
+}
+
+/* Gaslamp flicker for glowing accents */
+@keyframes gaslamp-flicker {
+  0%,
+  19%,
+  21%,
+  23%,
+  53%,
+  55%,
+  100% {
+    opacity: 1;
+    text-shadow:
+      0 0 6px var(--nola-gold-bright),
+      0 0 18px var(--nola-gold),
+      0 0 36px rgba(247, 201, 72, 0.5);
+  }
+  20%,
+  22%,
+  54% {
+    opacity: 0.85;
+    text-shadow:
+      0 0 3px var(--nola-gold-bright),
+      0 0 8px var(--nola-gold);
+  }
+}
+
+.gaslamp-glow {
+  animation: gaslamp-flicker 6s infinite ease-in-out;
+}
+
+/* Gentle float for fleur-de-lis ornaments */
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+
+.float-slow {
+  animation: float-slow 7s ease-in-out infinite;
+}
+
+.float-slow-delayed {
+  animation: float-slow 7s ease-in-out infinite;
+  animation-delay: 2.3s;
+}
+
+/* Shimmering gold background for headline text */
+@keyframes shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--nola-gold) 0%,
+    var(--nola-gold-bright) 25%,
+    var(--nola-gold) 50%,
+    var(--nola-gold-bright) 75%,
+    var(--nola-gold) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 5s linear infinite;
+}
+
+/* Streetlamp glow backdrop for the hero */
+.hero-glow {
+  background:
+    radial-gradient(
+      ellipse 60% 50% at 50% 0%,
+      rgba(247, 201, 72, 0.18),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 80% 60% at 20% 100%,
+      rgba(15, 121, 56, 0.25),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 80% 60% at 80% 100%,
+      rgba(75, 15, 119, 0.35),
+      transparent 60%
+    ),
+    linear-gradient(
+      180deg,
+      var(--nola-purple-deep) 0%,
+      #150220 60%,
+      #0c0110 100%
+    );
+}
