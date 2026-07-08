@@ -27,7 +27,7 @@ const script = Kaushan_Script({
 export const metadata: Metadata = {
   title: "Corneliuses — Laissez les bons temps rouler",
   description:
-    "The Corneliuses hub — videos, Brian's corner, ProParts Clearinghouse, and Dinnerocracy, all under one wrought-iron balcony.",
+    "The Corneliuses hub — videos, Brian's corner, and Dinnerocracy, all under one wrought-iron balcony.",
 };
 
 export default function RootLayout({

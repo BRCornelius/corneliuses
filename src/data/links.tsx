@@ -48,34 +48,6 @@ export const links: NolaLink[] = [
     ),
   },
   {
-    title: "ProParts Clearinghouse",
-    subtitle: "The parts depot",
-    description:
-      "Auto parts sourcing done right — the full storefront for ProParts Clearinghouse.",
-    href: "https://propartsclearinghouse.com",
-    domain: "propartsclearinghouse.com",
-    icon: (
-      <svg {...iconProps}>
-        <path d="M12 2.5c4.5 1.3 8 1.3 9 1.3v6.5c0 6-4.2 9-9 11-4.8-2-9-5-9-11V3.8c1 0 4.5 0 9-1.3Z" />
-        <path d="M9 12.2 11.2 14.5 15.5 9.8" />
-      </svg>
-    ),
-  },
-  {
-    title: "ProParts Clearinghouse — Client Portal",
-    subtitle: "For our clients, by invitation",
-    description:
-      "The private entrance around back — sign in to the client side of ProParts Clearinghouse.",
-    href: "https://client.propartsclearinghouse.com",
-    domain: "client.propartsclearinghouse.com",
-    icon: (
-      <svg {...iconProps}>
-        <rect x="4" y="10" width="16" height="10" rx="2" />
-        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-      </svg>
-    ),
-  },
-  {
     title: "Dinnerocracy",
     subtitle: "Where the table votes",
     description:

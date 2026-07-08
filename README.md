@@ -5,8 +5,6 @@ Router) and TypeScript, pointing to:
 
 - [videos.corneliuses.com](https://videos.corneliuses.com)
 - [brian.corneliuses.com](https://brian.corneliuses.com)
-- [propartsclearinghouse.com](https://propartsclearinghouse.com)
-- [client.propartsclearinghouse.com](https://client.propartsclearinghouse.com)
 - [dinnerocracy.com](https://dinnerocracy.com)
 
 ## Getting Started
