@@ -11,7 +11,7 @@ export default function Home() {
         <FleurDeLis className="float-slow pointer-events-none absolute left-6 top-10 h-16 w-16 text-nola-gold/20 sm:left-16 sm:h-24 sm:w-24" />
         <FleurDeLis className="float-slow-delayed pointer-events-none absolute right-6 top-16 h-14 w-14 text-nola-green/25 sm:right-16 sm:h-20 sm:w-20" />
 
-        <p className="font-script text-2xl text-nola-green sm:text-3xl">
+        <p className="font-script text-2xl text-nola-green-bright sm:text-3xl">
           Bienvenue à
         </p>
         <h1 className="gaslamp-glow font-display shimmer-text mt-2 text-5xl font-black tracking-tight sm:text-7xl">
@@ -46,7 +46,7 @@ export default function Home() {
           </p>
           <FleurDeLis className="h-4 w-4" />
         </div>
-        <p className="mt-4 text-xs text-foreground/40">
+        <p className="mt-4 text-xs text-foreground/60">
           &copy; {new Date().getFullYear()} Corneliuses. All rights reserved.
         </p>
       </footer>

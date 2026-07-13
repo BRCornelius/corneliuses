@@ -6,6 +6,7 @@
   --nola-purple: #4b0f77;
   --nola-purple-deep: #1f0329;
   --nola-green: #0f7938;
+  --nola-green-bright: #35c26b;
   --nola-gold: #f7c948;
   --nola-gold-bright: #ffe08a;
 }
@@ -16,6 +17,7 @@
   --color-nola-purple: var(--nola-purple);
   --color-nola-purple-deep: var(--nola-purple-deep);
   --color-nola-green: var(--nola-green);
+  --color-nola-green-bright: var(--nola-green-bright);
   --color-nola-gold: var(--nola-gold);
   --color-nola-gold-bright: var(--nola-gold-bright);
   --font-sans: var(--font-geist-sans);
@@ -69,6 +71,10 @@ body {
 }
 
 .gaslamp-glow {
+  text-shadow:
+    0 0 6px var(--nola-gold-bright),
+    0 0 18px var(--nola-gold),
+    0 0 36px rgba(247, 201, 72, 0.5);
   animation: gaslamp-flicker 6s infinite ease-in-out;
 }
 
@@ -116,6 +122,16 @@ body {
   background-clip: text;
   color: transparent;
   animation: shimmer 5s linear infinite;
+}
+
+/* Keep the glow, skip the movement for motion-sensitive visitors */
+@media (prefers-reduced-motion: reduce) {
+  .gaslamp-glow,
+  .float-slow,
+  .float-slow-delayed,
+  .shimmer-text {
+    animation: none;
+  }
 }
 
 /* Streetlamp glow backdrop for the hero */
