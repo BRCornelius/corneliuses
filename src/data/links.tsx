@@ -11,11 +11,13 @@ export type NolaLink = {
 
 const iconProps = {
   viewBox: "0 0 24 24",
+  className: "h-6 w-6",
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.6,
   strokeLinecap: "round" as const,
   strokeLinejoin: "round" as const,
+  "aria-hidden": true,
 };
 
 export const links: NolaLink[] = [
