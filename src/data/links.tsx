@@ -36,6 +36,20 @@ export const links: NolaLink[] = [
     ),
   },
   {
+    title: "Family Room",
+    subtitle: "Pull up a stoop",
+    description:
+      "The family's private front porch — video calls for the four of us and a group chat that keeps the conversation going.",
+    href: "https://chat.brcornelius.com",
+    domain: "chat.brcornelius.com",
+    icon: (
+      <svg {...iconProps}>
+        <path d="M4 5.5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3.5v-3.5H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Z" />
+        <path d="M17 9.5h3a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v3l-3.5-3H12" />
+      </svg>
+    ),
+  },
+  {
     title: "Brian",
     subtitle: "Your host on Bourbon Street",
     description:

@@ -30,7 +30,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1 px-6 pb-24">
-        <div className="mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2">
           {links.map((link) => (
             <LinkCard key={link.href} link={link} />
           ))}
