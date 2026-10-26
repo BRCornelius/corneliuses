@@ -9,7 +9,7 @@ export default function LinkCard({ link }: { link: NolaLink }) {
       <span className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_top_left,rgba(247,201,72,0.12),transparent_60%)]" />
 
       <div className="flex items-center justify-between">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-nola-gold/50 bg-nola-purple-deep text-nola-gold-bright transition-colors duration-300 group-hover:bg-nola-gold group-hover:text-nola-purple-deep">
+        <div className="flex h-12 w-12 overflow-hidden items-center justify-center rounded-full border border-nola-gold/50 bg-nola-purple-deep text-nola-gold-bright transition-colors duration-300 group-hover:bg-nola-gold group-hover:text-nola-purple-deep">
           {link.icon}
         </div>
         <span

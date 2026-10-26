@@ -43,9 +43,26 @@ export const links: NolaLink[] = [
     href: "https://chat.brcornelius.com",
     domain: "chat.brcornelius.com",
     icon: (
-      <svg {...iconProps}>
-        <path d="M4 5.5h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9l-4 3.5v-3.5H4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Z" />
-        <path d="M17 9.5h3a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-1v3l-3.5-3H12" />
+      // The Family Room app's own favicon, so the card matches the PWA.
+      <svg viewBox="0 0 64 64" className="h-full w-full" aria-hidden>
+        <defs>
+          <pattern id="family-room-kernels" width="3.27" height="2.59" patternUnits="userSpaceOnUse">
+            <rect x="0.33" y="0.23" width="2.62" height="2.12" rx="0.67" fill="#fef3a5" />
+          </pattern>
+        </defs>
+        <rect width="64" height="64" rx="14" fill="#111833" />
+        <path d="M 20.42 26.21 Q 25.22 16.64 35.83 18.01 Q 31.03 27.58 20.42 26.21 Z" fill="#34d399" />
+        <path d="M 23.87 14.32 Q 32.01 14.09 33.19 22.14 Q 25.06 22.37 23.87 14.32 Z" fill="#0da074" />
+        <g fill="#e2b026" stroke="#e2b026">
+          <path d="M 37.25 25.54 A 12.11 12.11 0 0 1 37.25 44.09" fill="none" strokeWidth="7.44" />
+          <path d="M 37.24 30.46 Q 35.43 32.62 33 31.19 L 28.21 28.37 Q 25.78 26.94 27.59 24.79 L 34.83 16.16 Q 36.64 14 38.47 16.14 L 42.07 20.38 Q 43.9 22.52 42.09 24.68 Z" stroke="none" />
+          <path d="M 37.24 39.17 Q 35.43 37.02 33 38.44 L 28.21 41.26 Q 25.78 42.69 27.59 44.85 L 34.83 53.47 Q 36.64 55.63 38.47 53.49 L 42.07 49.26 Q 43.9 47.11 42.09 44.96 Z" stroke="none" />
+        </g>
+        <g fill="url(#family-room-kernels)" stroke="url(#family-room-kernels)">
+          <path d="M 37.25 25.54 A 12.11 12.11 0 0 1 37.25 44.09" fill="none" strokeWidth="7.44" />
+          <path d="M 37.24 30.46 Q 35.43 32.62 33 31.19 L 28.21 28.37 Q 25.78 26.94 27.59 24.79 L 34.83 16.16 Q 36.64 14 38.47 16.14 L 42.07 20.38 Q 43.9 22.52 42.09 24.68 Z" stroke="none" />
+          <path d="M 37.24 39.17 Q 35.43 37.02 33 38.44 L 28.21 41.26 Q 25.78 42.69 27.59 44.85 L 34.83 53.47 Q 36.64 55.63 38.47 53.49 L 42.07 49.26 Q 43.9 47.11 42.09 44.96 Z" stroke="none" />
+        </g>
       </svg>
     ),
   },
