@@ -67,6 +67,35 @@ export const links: NolaLink[] = [
     ),
   },
   {
+    title: "Road Trip Games",
+    subtitle: "Are we there yet?",
+    description:
+      "The back-seat game hub — bingo, Uno, chess, trivia and more for the whole car, and it keeps playing when the signal drops.",
+    href: "https://games.brcornelius.com",
+    domain: "games.brcornelius.com",
+    icon: (
+      // The Road Trip Games app's own favicon, so the card matches the PWA.
+      <svg viewBox="0 0 512 512" className="h-full w-full" aria-hidden>
+        <defs>
+          <linearGradient id="road-trip-bg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stopColor="#8b5cf6" />
+            <stop offset="1" stopColor="#141a3a" />
+          </linearGradient>
+        </defs>
+        <rect width="512" height="512" rx="112" fill="url(#road-trip-bg)" />
+        <path d="M96 300c0-14 10-26 24-30l38-72c6-12 18-20 32-20h132c14 0 26 8 32 20l38 72c14 4 24 16 24 30v44c0 10-8 18-18 18h-18a40 40 0 0 1-80 0H212a40 40 0 0 1-80 0h-18c-10 0-18-8-18-18z" fill="#ffcf3d" />
+        <path d="M172 200l18-34h132l18 34z" fill="#38bdf8" />
+        <circle cx="172" cy="344" r="28" fill="#1a1a2e" />
+        <circle cx="340" cy="344" r="28" fill="#1a1a2e" />
+        <circle cx="172" cy="344" r="12" fill="#f4f1ff" />
+        <circle cx="340" cy="344" r="12" fill="#f4f1ff" />
+        <circle cx="392" cy="122" r="26" fill="#ff4d8d" />
+        <circle cx="110" cy="120" r="16" fill="#a3e635" />
+        <circle cx="150" cy="92" r="10" fill="#38bdf8" />
+      </svg>
+    ),
+  },
+  {
     title: "Brian",
     subtitle: "Your host on Bourbon Street",
     description:

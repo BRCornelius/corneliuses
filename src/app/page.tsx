@@ -31,8 +31,17 @@ export default function Home() {
 
       <main className="flex-1 px-6 pb-24">
         <div className="mx-auto grid w-full max-w-4xl grid-cols-1 gap-6 sm:grid-cols-2">
-          {links.map((link) => (
-            <LinkCard key={link.href} link={link} />
+          {links.map((link, i) => (
+            <LinkCard
+              key={link.href}
+              link={link}
+              // An odd card out sits centered under the two columns.
+              className={
+                links.length % 2 === 1 && i === links.length - 1
+                  ? "sm:col-span-2 sm:mx-auto sm:w-[calc(50%-0.75rem)]"
+                  : undefined
+              }
+            />
           ))}
         </div>
       </main>
