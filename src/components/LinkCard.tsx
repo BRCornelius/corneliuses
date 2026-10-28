@@ -1,10 +1,16 @@
 import type { NolaLink } from "@/data/links";
 
-export default function LinkCard({ link }: { link: NolaLink }) {
+export default function LinkCard({
+  link,
+  className = "",
+}: {
+  link: NolaLink;
+  className?: string;
+}) {
   return (
     <a
       href={link.href}
-      className="group relative flex flex-col gap-4 rounded-2xl border border-nola-gold/30 bg-gradient-to-b from-white/5 to-white/0 p-6 shadow-[0_0_0_1px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-nola-gold hover:shadow-[0_10px_40px_-10px_rgba(247,201,72,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-nola-gold"
+      className={`group relative flex flex-col gap-4 rounded-2xl border border-nola-gold/30 bg-gradient-to-b from-white/5 to-white/0 p-6 shadow-[0_0_0_1px_rgba(0,0,0,0.2)] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-nola-gold hover:shadow-[0_10px_40px_-10px_rgba(247,201,72,0.45)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-nola-gold ${className}`}
     >
       <span className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_top_left,rgba(247,201,72,0.12),transparent_60%)]" />
 
