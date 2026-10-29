@@ -18,7 +18,7 @@ export default function Home() {
           Corneliuses
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-balance text-base text-foreground/70 sm:text-lg">
-          One address for every corner of the courtyard — pull up a chair,
+          One address for every corner of the courtyard — grab your kerchief,
           the second line is just getting started.
         </p>
 
