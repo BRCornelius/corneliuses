@@ -96,6 +96,21 @@ export const links: NolaLink[] = [
     ),
   },
   {
+    title: "Code Buddy",
+    subtitle: "One puzzle at a time",
+    description:
+      "A coding game for the kids — JavaScript, git, HTML and CSS in bite-size puzzles, with stars, streaks and Byte the corn kid cheering them on.",
+    href: "https://coder.corneliuses.com",
+    domain: "coder.corneliuses.com",
+    icon: (
+      // The Code Buddy app's own favicon, so the card matches the PWA.
+      <svg viewBox="0 0 128 128" className="h-full w-full" aria-hidden>
+        <rect width="128" height="128" rx="28" fill="#1f1645" />
+        <g transform="translate(9 9) scale(0.86)"><path d="M46 40 C36 30 33 17 37 7 C47 15 54 26 57 37 Z" fill="#2bb673" stroke="#1f8f5a" strokeWidth="2" /><path d="M82 40 C92 30 95 17 91 7 C81 15 74 26 71 37 Z" fill="#2bb673" stroke="#1f8f5a" strokeWidth="2" /><path d="M57 36 C53 22 58 10 65 2 C70 12 73 24 71 36 Z" fill="#3ddc84" stroke="#1f8f5a" strokeWidth="2" /><path d="M63 7 C62 12 62 16 63 20" stroke="#23e5ff" strokeWidth="2.5" strokeLinecap="round" fill="none" /><ellipse cx="64" cy="72" rx="36" ry="44" fill="#ffd23f" stroke="#6c4cff" strokeWidth="5" /><g fill="#f2b705"><rect x="56.5" y="31" width="7" height="6" rx="3" /><rect x="66.5" y="31" width="7" height="6" rx="3" /><rect x="41.5" y="40.5" width="7" height="6" rx="3" /><rect x="51.5" y="40.5" width="7" height="6" rx="3" /><rect x="61.5" y="40.5" width="7" height="6" rx="3" /><rect x="71.5" y="40.5" width="7" height="6" rx="3" /><rect x="81.5" y="40.5" width="7" height="6" rx="3" /><rect x="41.5" y="97.5" width="7" height="6" rx="3" /><rect x="51.5" y="97.5" width="7" height="6" rx="3" /><rect x="61.5" y="97.5" width="7" height="6" rx="3" /><rect x="71.5" y="97.5" width="7" height="6" rx="3" /><rect x="81.5" y="97.5" width="7" height="6" rx="3" /><rect x="56.5" y="107" width="7" height="6" rx="3" /><rect x="66.5" y="107" width="7" height="6" rx="3" /></g><line x1="104" y1="64" x2="112" y2="44" stroke="#6c4cff" strokeWidth="4" strokeLinecap="round" /><circle cx="112" cy="42" r="6" fill="#ff5dd8" /><rect x="98" y="60" width="9" height="16" rx="4" fill="#6c4cff" /><rect x="22" y="54" width="84" height="26" rx="13" fill="#1f1645" stroke="#23e5ff" strokeWidth="3" /><path d="M32 59 h14" stroke="#fff" strokeOpacity="0.35" strokeWidth="3" strokeLinecap="round" /><g><path d="M40 71 q8 -11 16 0 M72 71 q8 -11 16 0" fill="none" stroke="#23e5ff" strokeWidth="4.5" strokeLinecap="round" /></g><path d="M50 91 q14 12 28 0" fill="none" stroke="#ff5d8f" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" /><path d="M30 100 C34 113 46 121 60 125 C51 117 44 108 40 96 Z" fill="#3ddc84" stroke="#1f8f5a" strokeWidth="2" /><path d="M98 100 C94 113 82 121 68 125 C77 117 84 108 88 96 Z" fill="#3ddc84" stroke="#1f8f5a" strokeWidth="2" /><path d="M37 105 l5 6 h6" stroke="#23e5ff" strokeWidth="2" fill="none" strokeLinecap="round" /><circle cx="49" cy="111" r="2" fill="#23e5ff" /><path d="M91 105 l-5 6 h-6" stroke="#ff5dd8" strokeWidth="2" fill="none" strokeLinecap="round" /><circle cx="79" cy="111" r="2" fill="#ff5dd8" /></g>
+      </svg>
+    ),
+  },
+  {
     title: "Brian",
     subtitle: "Your host on Bourbon Street",
     description:
