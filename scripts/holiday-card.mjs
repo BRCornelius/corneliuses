@@ -78,6 +78,10 @@ async function add(args) {
   if (!input || !yearArg) fail("usage: add <image> <year> [--frame x,y,w,h]");
   if (!existsSync(input)) fail(`no such file: ${input}`);
   const year = parseYear(yearArg);
+  // Validate everything before touching an existing photo.
+  const newFrame = frameArg ? parseFrame(frameArg) : undefined;
+  const entries = await loadManifest();
+  const existing = entries.find((e) => e.year === year);
 
   const info = await sharp(input)
     .rotate() // respect EXIF orientation
@@ -86,9 +90,7 @@ async function add(args) {
     .toFile(photoPath(year));
 
   const aspect = Math.round((info.width / info.height) * 10000) / 10000;
-  const entries = await loadManifest();
-  const existing = entries.find((e) => e.year === year);
-  const frame = frameArg ? parseFrame(frameArg) : (existing?.frame ?? null);
+  const frame = newFrame ?? existing?.frame ?? null;
   const entry = { year, aspect, frame };
   await saveManifest([...entries.filter((e) => e.year !== year), entry]);
 
@@ -160,6 +162,10 @@ async function check() {
   }
   for (const f of files) {
     if (!entries.some((e) => `${e.year}.jpg` === f)) problems.push(`public/card/${f} isn't in the manifest`);
+  }
+  const aspects = new Set(entries.map((e) => e.aspect.toFixed(2)));
+  if (aspects.size > 1) {
+    console.log(`note: photos have different shapes (${[...aspects].join(", ")}); the page resizes between those years`);
   }
   for (let i = 1; i < years.length; i++) {
     if (years[i] - years[i - 1] > 1) problems.push(`gap: no card between ${years[i - 1]} and ${years[i]}`);

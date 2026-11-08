@@ -11,6 +11,7 @@ import {
 import {
   holidayCards,
   photoSrc,
+  type FrameRect,
   type HolidayCardPhoto,
 } from "@/data/holiday-cards";
 
@@ -19,17 +20,45 @@ const FADE_MS = 280;
 
 type Pending = "in" | "out" | "fade-in" | null;
 
-/** Transform that blows the held frame up to fill the stage. */
-function zoomTransform(photo: HolidayCardPhoto) {
+/**
+ * Where the older photo sits inside the held frame, in % of the current
+ * photo: the frame rect shrunk to the older photo's aspect and centred, so
+ * the inset is never cropped or stretched and, once zoomed, lines up with
+ * the full-size older photo that replaces it.
+ */
+function insetRect(photo: HolidayCardPhoto, older: HolidayCardPhoto): FrameRect {
   const { x, y, width, height } = photo.frame;
+  const frameAspect = (width / height) * photo.aspect;
+  if (older.aspect >= frameAspect) {
+    const h = (width * photo.aspect) / older.aspect;
+    return { x, y: y + (height - h) / 2, width, height: h };
+  }
+  const w = (height * older.aspect) / photo.aspect;
+  return { x: x + (width - w) / 2, y, width: w, height };
+}
+
+/** Transform that blows the inset up to fill the stage. */
+function zoomTransform(rect: FrameRect) {
+  const { x, y, width, height } = rect;
   const scale = Math.min(100 / width, 100 / height);
   const cx = (x + width / 2) / 100;
   const cy = (y + height / 2) / 100;
   // transform-origin is the top-left corner, so a point p lands at
-  // scale * p + translate; put the frame's centre at the stage's centre.
+  // scale * p + translate; put the inset's centre at the stage's centre.
   const tx = (0.5 - scale * cx) * 100;
   const ty = (0.5 - scale * cy) * 100;
   return `translate(${tx}%, ${ty}%) scale(${scale})`;
+}
+
+/** Resolves once the preloaded older photo can paint, or has failed. */
+async function insetReady(inset: HTMLDivElement | null) {
+  const img = inset?.querySelector("img");
+  if (!img) return;
+  try {
+    await img.decode();
+  } catch {
+    // A failed load falls back to the stand-in; carry on.
+  }
 }
 
 function prefersReducedMotion() {
@@ -111,6 +140,7 @@ export default function HolidayCard() {
   const zoomIn = useCallback(async () => {
     if (busy || !older) return;
     setBusy(true);
+    await insetReady(insetRef.current);
 
     if (prefersReducedMotion()) {
       await stageRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
@@ -120,7 +150,7 @@ export default function HolidayCard() {
       pending.current = "fade-in";
     } else {
       const zoom = zoomRef.current?.animate(
-        [{ transform: "none" }, { transform: zoomTransform(photo) }],
+        [{ transform: "none" }, { transform: zoomTransform(insetRect(photo, older)) }],
         { duration: ZOOM_MS, easing: "cubic-bezier(.55,0,.25,1)", fill: "forwards" },
       );
       insetRef.current?.animate(
@@ -171,7 +201,7 @@ export default function HolidayCard() {
     } else {
       // Zoom out: start blown up on the held frame, then pull back.
       animation = zoomRef.current?.animate(
-        [{ transform: zoomTransform(photo) }, { transform: "none" }],
+        [{ transform: zoomTransform(insetRect(photo, older)) }, { transform: "none" }],
         { duration: ZOOM_MS, easing: "cubic-bezier(.55,0,.25,1)" },
       );
       insetRef.current?.animate(
@@ -188,7 +218,7 @@ export default function HolidayCard() {
       () => setBusy(false),
       () => setBusy(false),
     );
-  }, [index, photo]);
+  }, [index, photo, older]);
 
   // Keep keyboard focus on a control that still exists after a zoom.
   useEffect(() => {
@@ -218,6 +248,7 @@ export default function HolidayCard() {
   }, [zoomIn, zoomOut]);
 
   const frame = photo.frame;
+  const inset = older ? insetRect(photo, older) : frame;
 
   return (
     <div className="flex w-full flex-col items-center gap-5">
@@ -270,10 +301,10 @@ export default function HolidayCard() {
                 aria-hidden="true"
                 className="pointer-events-none absolute overflow-hidden opacity-0"
                 style={{
-                  left: `${frame.x}%`,
-                  top: `${frame.y}%`,
-                  width: `${frame.width}%`,
-                  height: `${frame.height}%`,
+                  left: `${inset.x}%`,
+                  top: `${inset.y}%`,
+                  width: `${inset.width}%`,
+                  height: `${inset.height}%`,
                 }}
               >
                 <Photo key={older.year} photo={older} />

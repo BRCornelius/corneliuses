@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import HolidayCard from "@/components/HolidayCard";
 import { holidayCards } from "@/data/holiday-cards";
 
@@ -21,9 +22,17 @@ export default function CardPage() {
         {holidayCards.length > 0 ? (
           <HolidayCard />
         ) : (
-          <p className="mt-24 font-script text-2xl text-nola-green-bright">
-            This year&rsquo;s card is on its way.
-          </p>
+          <div className="mt-24 flex flex-col items-center gap-6">
+            <p className="font-script text-2xl text-nola-green-bright">
+              This year&rsquo;s card is on its way.
+            </p>
+            <Link
+              href="/"
+              className="rounded-full border border-nola-gold/40 px-4 py-2 text-sm text-nola-gold-bright transition-colors hover:border-nola-gold hover:bg-nola-gold/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nola-gold"
+            >
+              <span aria-hidden="true">&larr; </span>corneliuses.com
+            </Link>
+          </div>
         )}
       </main>
     </div>
