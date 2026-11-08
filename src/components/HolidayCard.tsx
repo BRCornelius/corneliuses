@@ -37,17 +37,35 @@ function insetRect(photo: HolidayCardPhoto, older: HolidayCardPhoto): FrameRect 
   return { x: x + (width - w) / 2, y, width: w, height };
 }
 
-/** Transform that blows the inset up to fill the stage. */
-function zoomTransform(rect: FrameRect) {
-  const { x, y, width, height } = rect;
-  const scale = Math.min(100 / width, 100 / height);
-  const cx = (x + width / 2) / 100;
-  const cy = (y + height / 2) / 100;
-  // transform-origin is the top-left corner, so a point p lands at
-  // scale * p + translate; put the inset's centre at the stage's centre.
-  const tx = (0.5 - scale * cx) * 100;
-  const ty = (0.5 - scale * cy) * 100;
-  return `translate(${tx}%, ${ty}%) scale(${scale})`;
+/** A photo's box when fitted (contained and centred) in a W x H stage. */
+function fit(aspect: number, W: number, H: number) {
+  const w = Math.min(W, H * aspect);
+  const h = w / aspect;
+  return { x: (W - w) / 2, y: (H - h) / 2, w, h };
+}
+
+/**
+ * Transform for the current photo's box that blows the inset up to exactly
+ * where the older photo will sit once it replaces the current one, so the
+ * swap at the end of the zoom doesn't move anything, whatever their shapes.
+ */
+function zoomTransform(
+  photo: HolidayCardPhoto,
+  older: HolidayCardPhoto,
+  stage: HTMLElement | null,
+) {
+  const W = stage?.clientWidth ?? 1;
+  const H = stage?.clientHeight ?? 1;
+  const box = fit(photo.aspect, W, H);
+  const target = fit(older.aspect, W, H);
+  const inset = insetRect(photo, older);
+  const ix = (inset.x / 100) * box.w;
+  const iy = (inset.y / 100) * box.h;
+  const scale = target.w / ((inset.width / 100) * box.w);
+  // transform-origin is the box's top-left corner.
+  const tx = target.x - box.x - scale * ix;
+  const ty = target.y - box.y - scale * iy;
+  return `translate(${tx}px, ${ty}px) scale(${scale})`;
 }
 
 /** Resolves once the preloaded older photo can paint, or has failed. */
@@ -122,6 +140,7 @@ export default function HolidayCard() {
   const stageRef = useRef<HTMLDivElement>(null);
   const zoomRef = useRef<HTMLDivElement>(null);
   const insetRef = useRef<HTMLDivElement>(null);
+  const mainRef = useRef<HTMLDivElement>(null);
   const backRef = useRef<HTMLButtonElement>(null);
   const zoomButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -130,9 +149,13 @@ export default function HolidayCard() {
   const newer = holidayCards[index - 1];
   const isNewest = index === 0;
   const isOldest = !older;
+  // A missing year breaks the chain: the held frame shows a card we don't
+  // have, so the step past it is a crossfade instead of a zoom.
+  const linked = !!older && older.year === photo.year - 1;
+  const linkedToNewer = !!newer && newer.year === photo.year + 1;
 
   const clearAnimations = () => {
-    for (const el of [stageRef.current, zoomRef.current, insetRef.current]) {
+    for (const el of [stageRef.current, zoomRef.current, insetRef.current, mainRef.current]) {
       el?.getAnimations().forEach((a) => a.cancel());
     }
   };
@@ -142,7 +165,7 @@ export default function HolidayCard() {
     setBusy(true);
     await insetReady(insetRef.current);
 
-    if (prefersReducedMotion()) {
+    if (prefersReducedMotion() || !linked) {
       await stageRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
         duration: FADE_MS,
         fill: "forwards",
@@ -150,24 +173,30 @@ export default function HolidayCard() {
       pending.current = "fade-in";
     } else {
       const zoom = zoomRef.current?.animate(
-        [{ transform: "none" }, { transform: zoomTransform(insetRect(photo, older)) }],
+        [{ transform: "none" }, { transform: zoomTransform(photo, older, stageRef.current) }],
         { duration: ZOOM_MS, easing: "cubic-bezier(.55,0,.25,1)", fill: "forwards" },
       );
       insetRef.current?.animate(
         [{ opacity: 0 }, { opacity: 0, offset: 0.55 }, { opacity: 1 }],
         { duration: ZOOM_MS, fill: "forwards" },
       );
+      // Let the frame and hands around the inset dissolve, so nothing pops
+      // when the zoom ends and the older photo takes over.
+      mainRef.current?.animate(
+        [{ opacity: 1 }, { opacity: 1, offset: 0.7 }, { opacity: 0 }],
+        { duration: ZOOM_MS, fill: "forwards" },
+      );
       await zoom?.finished;
       pending.current = "in";
     }
     setIndex((i) => i + 1);
-  }, [busy, older, photo]);
+  }, [busy, older, photo, linked]);
 
   const zoomOut = useCallback(async () => {
     if (busy || !newer) return;
     setBusy(true);
 
-    if (prefersReducedMotion()) {
+    if (prefersReducedMotion() || !linkedToNewer) {
       await stageRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
         duration: FADE_MS,
         fill: "forwards",
@@ -178,7 +207,7 @@ export default function HolidayCard() {
       pending.current = "out";
     }
     setIndex((i) => i - 1);
-  }, [busy, newer]);
+  }, [busy, newer, linkedToNewer]);
 
   // Runs after the year changes and before the browser paints it.
   useLayoutEffect(() => {
@@ -198,14 +227,18 @@ export default function HolidayCard() {
       animation = stageRef.current?.animate([{ opacity: 0 }, { opacity: 1 }], {
         duration: FADE_MS,
       });
-    } else {
+    } else if (older) {
       // Zoom out: start blown up on the held frame, then pull back.
       animation = zoomRef.current?.animate(
-        [{ transform: zoomTransform(insetRect(photo, older)) }, { transform: "none" }],
+        [{ transform: zoomTransform(photo, older, stageRef.current) }, { transform: "none" }],
         { duration: ZOOM_MS, easing: "cubic-bezier(.55,0,.25,1)" },
       );
       insetRef.current?.animate(
         [{ opacity: 1 }, { opacity: 0, offset: 0.45 }, { opacity: 0 }],
+        { duration: ZOOM_MS },
+      );
+      mainRef.current?.animate(
+        [{ opacity: 0 }, { opacity: 1, offset: 0.3 }, { opacity: 1 }],
         { duration: ZOOM_MS },
       );
     }
@@ -282,17 +315,24 @@ export default function HolidayCard() {
 
       <div
         ref={stageRef}
-        className="relative overflow-hidden rounded-xl border border-nola-gold/30 bg-black shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
-        style={{
-          aspectRatio: photo.aspect,
-          // Fit the whole photo on screen, portrait phones included.
-          width: `min(100%, calc((100dvh - 15rem) * ${photo.aspect}))`,
-        }}
+        // One fixed stage for every year; each photo is fitted inside it, so
+        // portrait and landscape cards can zoom into each other smoothly.
+        className="relative flex w-full max-w-5xl items-center justify-center overflow-hidden [container-type:size]"
+        style={{ height: "max(18rem, calc(100dvh - 17rem))" }}
       >
-        <div ref={zoomRef} className="absolute inset-0 origin-top-left">
-          <Photo key={photo.year} photo={photo} eager />
+        <div
+          ref={zoomRef}
+          className="relative shrink-0 origin-top-left overflow-hidden rounded-lg shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
+          style={{
+            aspectRatio: photo.aspect,
+            width: `min(100cqw, ${photo.aspect} * 100cqh)`,
+          }}
+        >
+          <div ref={mainRef} className="absolute inset-0">
+            <Photo key={photo.year} photo={photo} eager />
+          </div>
 
-          {older && (
+          {linked && (
             <>
               {/* The older photo sits in the held frame: it preloads the
                   next image and is what the zoom fades into. */}
@@ -342,12 +382,18 @@ export default function HolidayCard() {
               disabled={busy}
               className="rounded-full bg-nola-gold px-6 py-2.5 font-semibold text-nola-purple-deep transition-colors hover:bg-nola-gold-bright focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-nola-gold disabled:opacity-60"
             >
-              Zoom into {older.year}
+              {linked ? `Zoom into ${older.year}` : `Skip to ${older.year}`}
             </button>
             <p className="text-xs uppercase tracking-[0.2em] text-foreground/60">
-              <span className="pointer-coarse:hidden">Click</span>
-              <span className="hidden pointer-coarse:inline">Tap</span> the
-              frame to zoom
+              {linked ? (
+                <>
+                  <span className="pointer-coarse:hidden">Click</span>
+                  <span className="hidden pointer-coarse:inline">Tap</span> the
+                  frame to zoom
+                </>
+              ) : (
+                <>We don&rsquo;t have the {photo.year - 1} card yet</>
+              )}
             </p>
           </>
         )}
