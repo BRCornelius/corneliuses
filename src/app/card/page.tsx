@@ -3,7 +3,8 @@ import HolidayCard from "@/components/HolidayCard";
 import { holidayCards } from "@/data/holiday-cards";
 
 const title = "Holiday Card — Corneliuses";
-const description = `Zoom through ${holidayCards.length} years of Cornelius holiday cards, each one held in the next.`;
+const description =
+  "Zoom through the Cornelius holiday cards, each one held in the next.";
 
 export const metadata: Metadata = {
   title,
@@ -17,7 +18,13 @@ export default function CardPage() {
     <div className="hero-glow flex min-h-dvh flex-col text-foreground">
       <div className="mardi-stripe" />
       <main className="flex flex-1 flex-col items-center px-4 py-6 sm:px-6 sm:py-8">
-        <HolidayCard />
+        {holidayCards.length > 0 ? (
+          <HolidayCard />
+        ) : (
+          <p className="mt-24 font-script text-2xl text-nola-green-bright">
+            This year&rsquo;s card is on its way.
+          </p>
+        )}
       </main>
     </div>
   );

@@ -1,19 +1,16 @@
 /**
  * Every year's holiday photo shows us holding last year's framed card.
  *
- * Each entry describes one photo in `public/card/<year>.jpg`:
- * - `frame` is where the held frame (last year's card) sits in the photo,
- *   as percentages of the photo's width and height, measured from the
- *   top-left corner. The zoom heads for this spot and it is the only
- *   clickable part of the photo.
+ * The data lives in `holiday-cards.json`, which `npm run card` maintains
+ * (see scripts/holiday-card.mjs). Each entry describes `public/card/<year>.jpg`:
  * - `aspect` is the photo's width divided by its height, so the frame
  *   overlay lines up before the image has loaded.
- *
- * The oldest year's `frame` is ignored: there is nothing older to zoom into.
- *
- * TODO: the frame positions below are placeholders until the real photos
- * are in `public/card/`.
+ * - `frame` is where the held frame (last year's card) sits in the photo,
+ *   as percentages of the photo's width and height from the top-left
+ *   corner. The zoom heads for this spot and it is the only clickable part
+ *   of the photo. The oldest year doesn't need one.
  */
+import data from "./holiday-cards.json";
 
 export type FrameRect = {
   /** Left edge, % of photo width. */
@@ -32,22 +29,14 @@ export type HolidayCardPhoto = {
   frame: FrameRect;
 };
 
-const placeholderFrame: FrameRect = { x: 38, y: 40, width: 24, height: 24 };
+type Entry = { year: number; aspect: number; frame?: FrameRect | null };
 
-const photos: HolidayCardPhoto[] = [
-  { year: 2018, aspect: 3 / 2, frame: placeholderFrame },
-  { year: 2019, aspect: 3 / 2, frame: placeholderFrame },
-  { year: 2020, aspect: 3 / 2, frame: placeholderFrame },
-  { year: 2021, aspect: 3 / 2, frame: placeholderFrame },
-  { year: 2022, aspect: 3 / 2, frame: placeholderFrame },
-  { year: 2023, aspect: 3 / 2, frame: placeholderFrame },
-  { year: 2024, aspect: 3 / 2, frame: placeholderFrame },
-  { year: 2025, aspect: 3 / 2, frame: placeholderFrame },
-];
+// Used until a year's frame has been measured, so the page still works.
+const unmappedFrame: FrameRect = { x: 40, y: 40, width: 20, height: 20 };
 
 /** Newest first: index 0 is the current year's card. */
-export const holidayCards: HolidayCardPhoto[] = [...photos].sort(
-  (a, b) => b.year - a.year,
-);
+export const holidayCards: HolidayCardPhoto[] = (data as Entry[])
+  .map((e) => ({ year: e.year, aspect: e.aspect, frame: e.frame ?? unmappedFrame }))
+  .sort((a, b) => b.year - a.year);
 
 export const photoSrc = (year: number) => `/card/${year}.jpg`;
