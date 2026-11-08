@@ -163,10 +163,6 @@ async function check() {
   for (const f of files) {
     if (!entries.some((e) => `${e.year}.jpg` === f)) problems.push(`public/card/${f} isn't in the manifest`);
   }
-  const aspects = new Set(entries.map((e) => e.aspect.toFixed(2)));
-  if (aspects.size > 1) {
-    console.log(`note: photos have different shapes (${[...aspects].join(", ")}); the page resizes between those years`);
-  }
   for (let i = 1; i < years.length; i++) {
     if (years[i] - years[i - 1] > 1) problems.push(`gap: no card between ${years[i - 1]} and ${years[i]}`);
   }
