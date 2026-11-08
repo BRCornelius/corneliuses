@@ -17,6 +17,7 @@ import {
 
 const ZOOM_MS = 1100;
 const FADE_MS = 280;
+const EASE = "cubic-bezier(.55,0,.25,1)";
 
 type Pending = "in" | "out" | "fade-in" | null;
 
@@ -45,27 +46,36 @@ function fit(aspect: number, W: number, H: number) {
 }
 
 /**
- * Transform for the current photo's box that blows the inset up to exactly
- * where the older photo will sit once it replaces the current one, so the
- * swap at the end of the zoom doesn't move anything, whatever their shapes.
+ * The two transforms for zooming from `photo` into `older`:
+ * - `main` moves the current photo's box so the held frame grows to exactly
+ *   where the older photo will sit once it takes over;
+ * - `overlay` starts the older photo (laid out at that final spot, at full
+ *   resolution) shrunk onto the held frame, so it rides along with the zoom.
+ * Both interpolate linearly in the eased progress and agree at every frame,
+ * and the overlay ends untransformed, so the hand-off doesn't twitch.
  */
-function zoomTransform(
+function zoomGeometry(
   photo: HolidayCardPhoto,
   older: HolidayCardPhoto,
   stage: HTMLElement | null,
 ) {
-  const W = stage?.clientWidth ?? 1;
-  const H = stage?.clientHeight ?? 1;
+  const rect = stage?.getBoundingClientRect();
+  const W = rect?.width ?? 1;
+  const H = rect?.height ?? 1;
   const box = fit(photo.aspect, W, H);
   const target = fit(older.aspect, W, H);
   const inset = insetRect(photo, older);
+  // The inset in box-local pixels.
   const ix = (inset.x / 100) * box.w;
   const iy = (inset.y / 100) * box.h;
-  const scale = target.w / ((inset.width / 100) * box.w);
-  // transform-origin is the box's top-left corner.
-  const tx = target.x - box.x - scale * ix;
-  const ty = target.y - box.y - scale * iy;
-  return `translate(${tx}px, ${ty}px) scale(${scale})`;
+  const iw = (inset.width / 100) * box.w;
+  const scale = target.w / iw;
+  return {
+    target,
+    // transform-origin is each element's top-left corner.
+    main: `translate(${target.x - box.x - scale * ix}px, ${target.y - box.y - scale * iy}px) scale(${scale})`,
+    overlay: `translate(${box.x + ix - target.x}px, ${box.y + iy - target.y}px) scale(${1 / scale})`,
+  };
 }
 
 /** Resolves once the preloaded older photo can paint, or has failed. */
@@ -95,13 +105,16 @@ function Photo({
   eager?: boolean;
 }) {
   const imgRef = useRef<HTMLImageElement>(null);
-  const [missing, setMissing] = useState(false);
+  // Keyed by year so the same <img> can switch photos without remounting,
+  // which would risk a blank frame at the hand-off.
+  const [missingYear, setMissingYear] = useState<number | null>(null);
+  const missing = missingYear === photo.year;
 
   // An image can fail before React hydrates and misses onError, so check.
   useEffect(() => {
     const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth === 0) setMissing(true);
-  }, []);
+    if (img && img.complete && img.naturalWidth === 0) setMissingYear(photo.year);
+  }, [photo.year]);
 
   if (missing) {
     return (
@@ -126,7 +139,8 @@ function Photo({
       draggable={false}
       loading="eager"
       fetchPriority={eager ? "high" : "auto"}
-      onError={() => setMissing(true)}
+      decoding="sync"
+      onError={() => setMissingYear(photo.year)}
       className="absolute inset-0 h-full w-full select-none object-cover"
     />
   );
@@ -139,7 +153,7 @@ export default function HolidayCard() {
 
   const stageRef = useRef<HTMLDivElement>(null);
   const zoomRef = useRef<HTMLDivElement>(null);
-  const insetRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
   const mainRef = useRef<HTMLDivElement>(null);
   const backRef = useRef<HTMLButtonElement>(null);
   const zoomButtonRef = useRef<HTMLButtonElement>(null);
@@ -154,8 +168,17 @@ export default function HolidayCard() {
   const linked = !!older && older.year === photo.year - 1;
   const linkedToNewer = !!newer && newer.year === photo.year + 1;
 
+  const placeOverlay = (r: { x: number; y: number; w: number; h: number }) => {
+    const el = overlayRef.current;
+    if (!el) return;
+    el.style.left = `${r.x}px`;
+    el.style.top = `${r.y}px`;
+    el.style.width = `${r.w}px`;
+    el.style.height = `${r.h}px`;
+  };
+
   const clearAnimations = () => {
-    for (const el of [stageRef.current, zoomRef.current, insetRef.current, mainRef.current]) {
+    for (const el of [stageRef.current, zoomRef.current, overlayRef.current, mainRef.current]) {
       el?.getAnimations().forEach((a) => a.cancel());
     }
   };
@@ -163,7 +186,7 @@ export default function HolidayCard() {
   const zoomIn = useCallback(async () => {
     if (busy || !older) return;
     setBusy(true);
-    await insetReady(insetRef.current);
+    await insetReady(overlayRef.current);
 
     if (prefersReducedMotion() || !linked) {
       await stageRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], {
@@ -172,12 +195,19 @@ export default function HolidayCard() {
       }).finished;
       pending.current = "fade-in";
     } else {
+      const g = zoomGeometry(photo, older, stageRef.current);
+      placeOverlay(g.target);
+      const timing = { duration: ZOOM_MS, easing: EASE, fill: "forwards" as const };
       const zoom = zoomRef.current?.animate(
-        [{ transform: "none" }, { transform: zoomTransform(photo, older, stageRef.current) }],
-        { duration: ZOOM_MS, easing: "cubic-bezier(.55,0,.25,1)", fill: "forwards" },
+        [{ transform: "none" }, { transform: g.main }],
+        timing,
       );
-      insetRef.current?.animate(
-        [{ opacity: 0 }, { opacity: 0, offset: 0.55 }, { opacity: 1 }],
+      overlayRef.current?.animate(
+        [{ transform: g.overlay }, { transform: "none" }],
+        timing,
+      );
+      overlayRef.current?.animate(
+        [{ opacity: 0 }, { opacity: 0, offset: 0.45 }, { opacity: 1, offset: 0.75 }, { opacity: 1 }],
         { duration: ZOOM_MS, fill: "forwards" },
       );
       // Let the frame and hands around the inset dissolve, so nothing pops
@@ -228,13 +258,21 @@ export default function HolidayCard() {
         duration: FADE_MS,
       });
     } else if (older) {
-      // Zoom out: start blown up on the held frame, then pull back.
+      // Zoom out: start blown up on the held frame, with the photo we came
+      // from laid over it, then pull back.
+      const g = zoomGeometry(photo, older, stageRef.current);
+      placeOverlay(g.target);
+      const timing = { duration: ZOOM_MS, easing: EASE };
       animation = zoomRef.current?.animate(
-        [{ transform: zoomTransform(photo, older, stageRef.current) }, { transform: "none" }],
-        { duration: ZOOM_MS, easing: "cubic-bezier(.55,0,.25,1)" },
+        [{ transform: g.main }, { transform: "none" }],
+        timing,
       );
-      insetRef.current?.animate(
-        [{ opacity: 1 }, { opacity: 0, offset: 0.45 }, { opacity: 0 }],
+      overlayRef.current?.animate(
+        [{ transform: "none" }, { transform: g.overlay }],
+        timing,
+      );
+      overlayRef.current?.animate(
+        [{ opacity: 1 }, { opacity: 1, offset: 0.25 }, { opacity: 0, offset: 0.55 }, { opacity: 0 }],
         { duration: ZOOM_MS },
       );
       mainRef.current?.animate(
@@ -281,7 +319,6 @@ export default function HolidayCard() {
   }, [zoomIn, zoomOut]);
 
   const frame = photo.frame;
-  const inset = older ? insetRect(photo, older) : frame;
 
   return (
     <div className="flex w-full flex-col items-center gap-5">
@@ -329,27 +366,11 @@ export default function HolidayCard() {
           }}
         >
           <div ref={mainRef} className="absolute inset-0">
-            <Photo key={photo.year} photo={photo} eager />
+            <Photo photo={photo} eager />
           </div>
 
           {linked && (
             <>
-              {/* The older photo sits in the held frame: it preloads the
-                  next image and is what the zoom fades into. */}
-              <div
-                ref={insetRef}
-                aria-hidden="true"
-                className="pointer-events-none absolute overflow-hidden opacity-0"
-                style={{
-                  left: `${inset.x}%`,
-                  top: `${inset.y}%`,
-                  width: `${inset.width}%`,
-                  height: `${inset.height}%`,
-                }}
-              >
-                <Photo key={older.year} photo={older} />
-              </div>
-
               <button
                 type="button"
                 onClick={zoomIn}
@@ -366,6 +387,18 @@ export default function HolidayCard() {
             </>
           )}
         </div>
+
+        {older && (
+          // The older photo, laid out where it will sit once it takes over.
+          // It preloads the next image and rides in on top of the zoom.
+          <div
+            ref={overlayRef}
+            aria-hidden="true"
+            className="pointer-events-none absolute left-0 top-0 origin-top-left overflow-hidden rounded-lg opacity-0 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.8)]"
+          >
+            <Photo photo={older} />
+          </div>
+        )}
       </div>
 
       <div className="flex min-h-12 flex-col items-center gap-2 text-center">
