@@ -124,12 +124,28 @@ body {
   animation: shimmer 5s linear infinite;
 }
 
+/* Holiday lights that blink at their own pace */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.twinkle {
+  animation: twinkle 1.6s ease-in-out infinite;
+}
+
 /* Keep the glow, skip the movement for motion-sensitive visitors */
 @media (prefers-reduced-motion: reduce) {
   .gaslamp-glow,
   .float-slow,
   .float-slow-delayed,
-  .shimmer-text {
+  .shimmer-text,
+  .twinkle {
     animation: none;
   }
 }

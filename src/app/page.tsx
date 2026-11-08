@@ -1,4 +1,5 @@
 import FleurDeLis from "@/components/FleurDeLis";
+import HolidayCardButton from "@/components/HolidayCardButton";
 import LinkCard from "@/components/LinkCard";
 import { links } from "@/data/links";
 
@@ -27,6 +28,8 @@ export default function Home() {
           <FleurDeLis className="h-5 w-5" />
           <span className="h-px w-12 bg-nola-gold/40" />
         </div>
+
+        <HolidayCardButton />
       </header>
 
       <main className="flex-1 px-6 pb-24">
