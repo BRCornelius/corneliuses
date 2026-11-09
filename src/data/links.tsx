@@ -111,6 +111,22 @@ export const links: NolaLink[] = [
     ),
   },
   {
+    title: "Cornelius Fit",
+    subtitle: "Second line, every day",
+    description:
+      "Our two-person fitness app — shared meals and workouts, one-tap walk tracking, and private weight trends, with an “I ate it too” for every plate.",
+    href: "https://fit.corneliuses.com",
+    domain: "fit.corneliuses.com",
+    icon: (
+      // The Cornelius Fit app's own icon, so the card matches the PWA.
+      <svg viewBox="0 0 512 512" className="h-full w-full" aria-hidden>
+        <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="#6d5efc"/>
+        <g transform="translate(80 82.75) scale(11)"><line x1="10" y1="13" x2="22" y2="13" stroke="#ffffff" strokeWidth="3" strokeLinecap="round"/><path d="M7 28 C4 25 1 20 0.5 13 C3 16 4.5 19 7 21 C9.5 19 11 16 13.5 13 C13 20 10 25 7 28Z" fill="#7ed67e" stroke="#3f9a3f" strokeWidth="0.8" strokeLinejoin="round"/><rect x="3.5" y="3.5" width="7" height="19" rx="3.5" fill="#f7c948" stroke="#d9981a" strokeWidth="1"/><circle cx="5.6" cy="7" r="1.05" fill="#e3a51d"/><circle cx="8.4" cy="7" r="1.05" fill="#e3a51d"/><circle cx="5.6" cy="10" r="1.05" fill="#e3a51d"/><circle cx="8.4" cy="10" r="1.05" fill="#e3a51d"/><circle cx="5.6" cy="13" r="1.05" fill="#e3a51d"/><circle cx="8.4" cy="13" r="1.05" fill="#e3a51d"/><circle cx="5.6" cy="16" r="1.05" fill="#e3a51d"/><circle cx="8.4" cy="16" r="1.05" fill="#e3a51d"/><path d="M7 28 C5 25 3.5 22 3.5 17 L7 21 L10.5 17 C10.5 22 9 25 7 28Z" fill="#5cb85c" stroke="#3f9a3f" strokeWidth="0.8" strokeLinejoin="round"/><path d="M25 28 C22 25 19 20 18.5 13 C21 16 22.5 19 25 21 C27.5 19 29 16 31.5 13 C31 20 28 25 25 28Z" fill="#7ed67e" stroke="#3f9a3f" strokeWidth="0.8" strokeLinejoin="round"/><rect x="21.5" y="3.5" width="7" height="19" rx="3.5" fill="#f7c948" stroke="#d9981a" strokeWidth="1"/><circle cx="23.6" cy="7" r="1.05" fill="#e3a51d"/><circle cx="26.4" cy="7" r="1.05" fill="#e3a51d"/><circle cx="23.6" cy="10" r="1.05" fill="#e3a51d"/><circle cx="26.4" cy="10" r="1.05" fill="#e3a51d"/><circle cx="23.6" cy="13" r="1.05" fill="#e3a51d"/><circle cx="26.4" cy="13" r="1.05" fill="#e3a51d"/><circle cx="23.6" cy="16" r="1.05" fill="#e3a51d"/><circle cx="26.4" cy="16" r="1.05" fill="#e3a51d"/><path d="M25 28 C23 25 21.5 22 21.5 17 L25 21 L28.5 17 C28.5 22 27 25 25 28Z" fill="#5cb85c" stroke="#3f9a3f" strokeWidth="0.8" strokeLinejoin="round"/>
+        </g>
+      </svg>
+    ),
+  },
+  {
     title: "Brian",
     subtitle: "Your host on Bourbon Street",
     description:
